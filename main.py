@@ -1,38 +1,45 @@
-import pymysql
-import datetime
+from tkinter import *
+from tkinter import ttk
 
-class DataBase:
-    def __init__(self):
-        self.connection = pymysql.connect(
-            host = 'localhost',
-            user = 'root',
-            password = 'Chavez040718',
-            db = 'menagerie'
-        )
+class APP():
 
-        self.cursor = self.connection.cursor()
-        print("Conexión establecida exitosamente!")
+    def __init__(self, window):
+        self.window = window
+        self.window.title('Password Manager')
 
-    def traer_Datos(self):
-        sql = 'SELECT * FROM t_familia'
-        try:
-            self.cursor.execute(sql)
-            data = self.cursor.fetchall()
-            for user in data:
-                print(user)
-        except Exception as e:
-            print(e)
+        #creating frame container
+        frame = LabelFrame(self.window, text = 'Register a new password')
+        frame.grid(row=0, column=0, columnspan=3, pady=20)
 
-    def registrar_amigo(self, nombre, altura, peso, nacimiento, celular):
-        sql = "INSERT INTO `t_familia` VALUES(id, %s, %s, %s, %s, %s)"
-        try:
-            self.cursor.execute(sql, (nombre, altura, peso, nacimiento, celular))
-            self.connection.commit()
-        except Exception as e:
-            print(e)
+        # name input
+        Label(frame, text = 'Name: ').grid(row=1, column=0)
+        self.name = Entry(frame)
+        self.name.focus()
+        self.name.grid(row = 1, column = 1)
+
+        # password input
+        Label(frame, text='Password: ').grid(row=2, column=0)
+        self.password = Entry(frame, show='*')
+        self.password.grid(row = 2, column=1)
+
+        # button 'add password'
+        ttk.Button(frame, text='Save Password').grid(row=3, columnspan=2, sticky= W + E)
+
+        # table
+        self.list = ttk.Treeview(height=10, columns=2)
+        self.list.grid(row=4, column=0,columnspan=2)
+
+    def show_passwords(self):
+        self.window.destroy()
+        self.shows = tk.Tk
 
 
-bd = DataBase()
-bd.traer_Datos()
-bd.registrar_amigo('Paul', 168, 80, '1999-11-15', '939222888')
-bd.traer_Datos()
+
+
+
+
+if __name__ == '__main__':
+    window = Tk()
+    aplication = APP(window)
+    window.mainloop()
+
