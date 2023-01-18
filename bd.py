@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import pymysql
+from prettytable import PrettyTable
+from utilities import crypto
 
 class DataBase:
     def __init__(self):
@@ -13,13 +15,12 @@ class DataBase:
         self.cursor = self.connection.cursor()
         print("Conexión establecida exitosamente!")
 
-    def show_data(self):
-        sql = 'SELECT * FROM t_passwords'
+    def show_all(self):
+        sql = 'SELECT id, name, correo, password, lenght FROM t_passwords'
         try:
             self.cursor.execute(sql)
             data = self.cursor.fetchall()
-            for user in data:
-                print(user)
+            return data
         except Exception as e:
             print(e)
 
@@ -32,8 +33,15 @@ class DataBase:
         except Exception as e:
             print(e)
 
-    def read_password(self, name):
-        sql = "SELECT name FROM"
+    def read_password(self, id):
+        sql = 'SELECT name, correo, password, key_pwsd from t_passwords where id = %s'
+        try:
+            self.cursor.execute(sql, (id))
+            data = self.cursor.fetchone()
+            return data
+        except Exception as e:
+            print(e)
+
 
     def cerrar_sesion(self):
         print("Conexión cerrada!")
