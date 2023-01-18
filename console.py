@@ -1,7 +1,9 @@
 import cmd
-from bd import DataBase
 import getpass
-from cryptography.fernet import Fernet
+from bd import DataBase
+from utilities import crypto
+from prettytable import PrettyTable
+
 
 class PasswordManager(cmd.Cmd):
     prompt = "(---) "
@@ -13,28 +15,26 @@ class PasswordManager(cmd.Cmd):
         usr = input("Username or E-mail: ")
         password = getpass.getpass("Enter your password: ")
         lenght = len(password)
-        encryp_pwsd = self.encrypted(password)
-        self.bd.create_password(item, usr, encryp_pwsd[0], encryp_pwsd[1], lenght) # encrypt paswd and key
+        encryp_pwsd = crypto.encrypted(password)
+        self.bd.create_password(item, usr, encryp_pwsd[0], encryp_pwsd[1], lenght)
 
     def do_all(self, line):
-        self.bd.show_data()
-
-    def encrypted(self, pswd):
-        key = Fernet.generate_key()
-        cipher_suite = Fernet(key)
-        pswd_bytes = pswd.encode()
-        ciphered_pswd = cipher_suite.encrypt(pswd_bytes)
-        return [ciphered_pswd, key]
-
-    def denrcypted(self, pswd, key):
-        cipher_suite = Fernet(key)
-        password = cipher_suite.decrypt(pswd)
-        return password
-
+        data = self.bd.show_all()
+        table = PrettyTable(["id", "Item", "Email/Username", "Password"])
+        for item in data:
+            item = self.secret_password(item)
+            table.add_row(item)
+        print(table)
 
     def do_read(self, line):
-        tokens = self.tokenizer(line)
-        self.bd.create
+        id_item = input("Ingrese el id del item que desea descubrir: ")
+        data = self.bd.read_password(id_item)
+        table = PrettyTable(["Item", "Email/Username", "Password"])
+        dencrypted_password = crypto.denrcypted(data[2], data[3])
+        new_item = list(data[:3])
+        new_item[2] = dencrypted_password
+        table.add_row(new_item)
+        print(table)
 
     def do_quit(self, line):
         """Quit command to exit the program and close connection with database."""
@@ -52,6 +52,13 @@ class PasswordManager(cmd.Cmd):
     def tokenizer(self, line):
         tokens = line.split()
         return tokens
+
+    def secret_password(self, items):
+        lenght = items[4]
+        new_element = ''.join(['*' for _ in range(lenght)])
+        new_items = list(items[:4])
+        new_items[3] = new_element
+        return new_items
 
 
 
