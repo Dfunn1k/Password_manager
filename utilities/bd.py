@@ -12,17 +12,19 @@ class DataBase:
             db = 'manager_password'
         )
 
-        self.cursor = self.connection.cursor()
         print("Conexión establecida exitosamente!")
 
     def show_all(self):
         sql = 'SELECT id, name, correo, password, lenght FROM t_passwords'
         try:
+            self.cursor = self.connection.cursor()
             self.cursor.execute(sql)
             data = self.cursor.fetchall()
             return data
         except Exception as e:
             print(e)
+        finally:
+            self.connection.close()
 
     def create_password(self, name, correo, password, key, lenght):
         sql = "INSERT INTO `t_passwords` VALUES(id, %s, %s, %s, %s, %s)"
@@ -32,6 +34,8 @@ class DataBase:
             print("Se registro su contraseña")
         except Exception as e:
             print(e)
+        finally:
+            self.connection.close()
 
     def read_password(self, id):
         sql = 'SELECT name, correo, password, key_pwsd from t_passwords where id = %s'
@@ -41,10 +45,6 @@ class DataBase:
             return data
         except Exception as e:
             print(e)
-
-
-    def cerrar_sesion(self):
-        print("Conexión cerrada!")
-        self.connection.close()
-
+        finally:
+            self.connection.close()
 

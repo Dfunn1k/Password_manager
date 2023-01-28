@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 import cmd
 import getpass
-from bd import DataBase
+from utilities.bd import DataBase
 from utilities import crypto
 from prettytable import PrettyTable
 
@@ -38,7 +39,6 @@ class PasswordManager(cmd.Cmd):
 
     def do_quit(self, line):
         """Quit command to exit the program and close connection with database."""
-        self.bd.cerrar_sesion()
         return True
 
     def emptyline(self):
